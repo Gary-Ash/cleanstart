@@ -175,6 +175,38 @@ repeat while true
 end repeat
 
 (*****************************************************************************************
+ * try to deal with occasional problem that SnippetsLab has connecting to iCloud by
+ * quitting, pausing and re-launching it
+ ****************************************************************************************)
+tell application "System Events" to tell process "SnippetsLab"
+	if exists button "OK" of sheet 1 of window 1 then
+		click button "OK" of sheet 1 of window 1
+		tell application "SnippetsLab" to quit
+		delay 1
+		tell application "SnippetsLab" to launch
+	end if
+end tell
+
+(*****************************************************************************************
+ * Slack setup
+ ****************************************************************************************)
+if application "Slack" is running then
+	try
+		tell application "Slack"
+			activate
+			delay 0.2
+			close window 1
+		end tell
+	end try
+end if
+tell application "Keyboard Maestro" to quit
+(*****************************************************************************************
+ * make sure the Desktop has focus, previous version always let a window in focus and I'd
+ * end up closing it mistake
+ ****************************************************************************************)
+tell application "Finder" to activate
+
+(*****************************************************************************************
  * clean up Finder windows
  ****************************************************************************************)
 tell application "Finder"
@@ -207,39 +239,6 @@ tell application "Finder"
 		click menu item "Clear Menu" of menu of menu item "Recent Folders" of menu of menu bar item "Go" of menu bar 1
 	end tell
 end tell
-
-
-(*****************************************************************************************
- * try to deal with occasional problem that SnippetsLab has connecting to iCloud by
- * quitting, pausing and re-launching it
- ****************************************************************************************)
-tell application "System Events" to tell process "SnippetsLab"
-	if exists button "OK" of sheet 1 of window 1 then
-		click button "OK" of sheet 1 of window 1
-		tell application "SnippetsLab" to quit
-		delay 1
-		tell application "SnippetsLab" to launch
-	end if
-end tell
-
-(*****************************************************************************************
- * Slack setup
- ****************************************************************************************)
-if application "Slack" is running then
-	try
-		tell application "Slack"
-			activate
-			delay 0.2
-			close window 1
-		end tell
-	end try
-end if
-tell application "Keyboard Maestro" to quit
-(*****************************************************************************************
- * make sure the Desktop has focus, previous version always let a window in focus and I'd
- * end up closing it mistake
- ****************************************************************************************)
-tell application "Finder" to activate
 
 set volume output volume 50 with output muted --100%
 set volume without output muted
